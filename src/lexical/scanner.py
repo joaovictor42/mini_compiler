@@ -9,7 +9,7 @@ class Scanner:
 	def __init__(self, filename: str) -> None:
 		self.pos = -1
 		self.line = 1
-		self.column = 1
+		self.column = 0
 
 		try:
 			with open(filename, "r") as file:
@@ -37,7 +37,7 @@ class Scanner:
 				# Go to new line
 				elif end_of_line(current_char):
 					self.line += 1
-					self.column = 1
+					self.column = 0
 					continue
 
 				# Inline comment
@@ -68,22 +68,18 @@ class Scanner:
 
 				# Assignment operator
 				elif is_assignment_operator(current_char):
-					self.column += 1
 					return Token(TokenType.ASSIGNMENT, current_char)
 				
 				# Arithmetic operator
 				elif is_arithmetic_operator(current_char):
-					self.column += 1
 					return Token(TokenType.ARITHMETIC_OPERATOR, current_char)
 				
 				# Open parenthesis
 				elif open_parenthesis(current_char):
-					self.column += 1
 					return Token(TokenType.LEFT_PARENTHESIS, current_char)
 				
 				# Close parenthesis
 				elif close_parenthesis(current_char):
-					self.column += 1
 					return Token(TokenType.RIGHT_PARENTHESIS, current_char)
 				
 				# Invalid character
@@ -98,7 +94,7 @@ class Scanner:
 					continue
 				self.state = 0
 				self.line += 1
-				self.column = 1
+				self.column = 0
 				continue
 
 			# Identifier
@@ -107,7 +103,6 @@ class Scanner:
 					content += current_char
 				else:
 					self.back()
-					self.column += 1
 					if content in RESERVED_KEYWORDS:
 						return Token(TokenType.RESERVED, content)
 					return Token(TokenType.IDENTYFIER, content)
@@ -126,7 +121,6 @@ class Scanner:
 					raise LexicalException(message)
 				else:
 					self.back()
-					self.column += 1
 					return Token(TokenType.NUMBER, content)
 				
 			# number: suffix is digit
@@ -144,14 +138,12 @@ class Scanner:
 						message = f"{LexicalError.NUMBER_MALFORMED}\n"
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
-					self.column += 1
 					return Token(TokenType.NUMBER, content)
 				
 			# Relational operator
 			elif self.state == 4:
 				if current_char == '=':
 					content += current_char
-					self.column += 1
 					return Token(TokenType.RELATIONAL_OPERATOR, content)
 				else:
 					self.back()
@@ -159,15 +151,16 @@ class Scanner:
 						message = f"{LexicalError.RELATIONAL_OPERATOR_MALFORMED}\n"
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
-					self.column += 1
 					return Token(TokenType.RELATIONAL_OPERATOR, content)
 					
 	def next_char(self) -> str:
 		self.pos += 1
+		self.column += 1
 		return self.content[self.pos]
 
 	def back(self) -> None:
 		self.pos -= 1
+		self.column -= 1
 
 	def is_eof(self) -> bool:
 		if self.pos >= len(self.content)-1:
