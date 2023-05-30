@@ -13,7 +13,7 @@ class Scanner:
 
 		try:
 			with open(filename, "r") as file:
-				self.content = file.read()
+				self.content = file.read() + '\n'
 		except Exception as e:
 			print("Error while reading file: " + filename)
 			traceback.print_exc()
