@@ -1,7 +1,7 @@
 from utils.token_type import TokenType
 from utils.reserved_keywords import RESERVED_KEYWORDS
 from lexical.token import Token
-from lexical.exceptions import CompileLexicalError, LexicalError
+from exceptions import LexicalException, LexicalError
 import traceback
 
 class Scanner:
@@ -88,7 +88,9 @@ class Scanner:
 				
 				# Invalid character
 				else:
-					raise CompileLexicalError(LexicalError.INVALID_CHARACTER, self.line, self.column)
+					message = f"{LexicalError.INVALID_CHARACTER}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)
 				
 			# Inline comment
 			elif self.state == -1:
@@ -119,7 +121,9 @@ class Scanner:
 					content += current_char
 					self.state = 3
 				elif is_letter(current_char) or current_char == '_':
-					raise CompileLexicalError(LexicalError.NUMBER_MALFORMED, self.line, self.column)
+					message = f"{LexicalError.NUMBER_MALFORMED}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)
 				else:
 					self.back()
 					self.column += 1
@@ -130,12 +134,16 @@ class Scanner:
 				if is_digit(current_char):
 					content += current_char
 				elif is_letter(current_char) or current_char == '_':
-					raise CompileLexicalError(LexicalError.NUMBER_MALFORMED, self.line, self.column)
+					message = f"{LexicalError.NUMBER_MALFORMED}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)
 				else:
 					self.back()
 					# Check if number ends with dot. Example: 1.
 					if content[-1] == ".":
-						raise CompileLexicalError(LexicalError.NUMBER_MALFORMED, self.line, self.column)
+						message = f"{LexicalError.NUMBER_MALFORMED}\n"
+						message += f"Line: {self.line} Column: {self.column}"
+						raise LexicalException(message)
 					self.column += 1
 					return Token(TokenType.NUMBER, content)
 				
@@ -148,7 +156,9 @@ class Scanner:
 				else:
 					self.back()
 					if content == '!':
-						raise CompileLexicalError(LexicalError.RELATIONAL_OPERATOR_MALFORMED, self.line, self.column)
+						message = f"{LexicalError.RELATIONAL_OPERATOR_MALFORMED}\n"
+						message += f"Line: {self.line} Column: {self.column}"
+						raise LexicalException(message)
 					self.column += 1
 					return Token(TokenType.RELATIONAL_OPERATOR, content)
 					

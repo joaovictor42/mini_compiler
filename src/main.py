@@ -1,5 +1,5 @@
 from lexical.scanner import Scanner
-from lexical.exceptions import CompileLexicalError
+from exceptions import LexicalException, SyntaxException
 
 
 def main():
@@ -8,8 +8,8 @@ def main():
 	while True:
 		try:
 			token = scanner.next_token()
-		except CompileLexicalError as e:
-			print("Lexical error: " + e.message)
+		except (LexicalException, SyntaxException) as e:
+			print(e.message)
 			break
 		except EOFError:
 			print("End of file reached!")
