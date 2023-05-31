@@ -18,7 +18,7 @@ x == 1
 5 <= 6
 7 >= 8
 9 == 10 # 2 assignments
-11 != 12
+11 ! 12
 #13 ! 14 # Malformed relational expression
 
 (x + y)
@@ -56,14 +56,3 @@ printx
 14==13
 15>=14
 16<=15
-
-#1x
-#2_
-
-
-
-
-
-
-
-

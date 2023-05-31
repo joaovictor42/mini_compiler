@@ -29,7 +29,8 @@ class Scanner:
 			current_char = self.next_char()
 
 			# START
-			if self.state == 0:
+			if self.state == 0:					
+
 				# Skip spaces
 				if is_space(current_char):
 					continue
@@ -44,6 +45,9 @@ class Scanner:
 				elif is_inline_comment(current_char):
 					self.state = -1
 
+				elif "\"" == current_char:
+					self.state = 5
+
 				# Indentifier
 				elif is_letter(current_char) or current_char == '_':
 					content += current_char
@@ -55,7 +59,7 @@ class Scanner:
 					# Go check suffix
 					self.state = 2
 
-				# Number: prefix is a dot
+				# REAL: prefix is a dot
 				elif current_char == '.':
 					content += current_char
 					# Go check suffix
@@ -66,9 +70,13 @@ class Scanner:
 					content += current_char
 					self.state = 4
 
-				# Assignment operator
-				elif is_assignment_operator(current_char):
-					return Token(TokenType.ASSIGNMENT, current_char)
+				# Colon
+				elif current_char in [':', ';', ',']:
+					return Token(TokenType.RESERVED, current_char)
+				
+				# # Assignment operator
+				# elif is_assignment_operator(current_char):
+				# 	return Token(TokenType.ASSIGNMENT, current_char)
 				
 				# Arithmetic operator
 				elif is_arithmetic_operator(current_char):
@@ -104,8 +112,10 @@ class Scanner:
 				else:
 					self.back()
 					if content in RESERVED_KEYWORDS:
+						if content in ['AND', 'OR']:
+							return Token(TokenType.RELATIONAL_OPERATOR, content)
 						return Token(TokenType.RESERVED, content)
-					return Token(TokenType.IDENTYFIER, content)
+					return Token(TokenType.VARIAVEL, content)
 			
 			# number: suffix is a digit or a dot
 			elif self.state == 2:
@@ -121,7 +131,7 @@ class Scanner:
 					raise LexicalException(message)
 				else:
 					self.back()
-					return Token(TokenType.NUMBER, content)
+					return Token(TokenType.INTEIRO, content)
 				
 			# number: suffix is digit
 			elif self.state == 3:
@@ -138,7 +148,7 @@ class Scanner:
 						message = f"{LexicalError.NUMBER_MALFORMED}\n"
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
-					return Token(TokenType.NUMBER, content)
+					return Token(TokenType.REAL, content)
 				
 			# Relational operator
 			elif self.state == 4:
@@ -152,6 +162,13 @@ class Scanner:
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
 					return Token(TokenType.RELATIONAL_OPERATOR, content)
+				
+			# Cadeia
+			elif self.state == 5:
+				if current_char == '"':
+					return Token(TokenType.CADEIA, content)
+				else:
+					content += current_char
 					
 	def next_char(self) -> str:
 		self.pos += 1
@@ -184,13 +201,13 @@ def end_of_line(char: str) -> bool:
 	return char == '\n'
 
 def is_relational_operator(char: str) -> bool:
-	return char in ['>', '<', '!']
+	return char in ['=', '>', '<', '!']
 
 def is_arithmetic_operator(char: str) -> bool:
 	return char in ['+', '-', '*', '/']
 
-def is_assignment_operator(char: str) -> bool:
-	return char == '='
+# def is_assignment_operator(char: str) -> bool:
+# 	return char == ':' # OK
 
 def open_parenthesis(char: str) -> bool:
 	return char == '('
