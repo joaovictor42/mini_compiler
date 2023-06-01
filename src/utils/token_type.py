@@ -9,8 +9,7 @@ class TokenType(Enum):
     ARITHMETIC_OPERATOR = 5
     LEFT_PARENTHESIS = 6
     RIGHT_PARENTHESIS = 7
-    SEMICOLON = 8
-    COMMA = 9
     COLON = 10
     RESERVED = 11
     CADEIA = 12
+    TERMINADOR = 13

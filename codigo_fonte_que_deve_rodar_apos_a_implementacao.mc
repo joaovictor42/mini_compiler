@@ -3,6 +3,7 @@ numero1:INTEIRO;
 numero2:INTEIRO;
 numero3:INTEIRO;
 aux:INTEIRO;
+x, y, z:REAL;
 
 :ALGORITMO
 # Coloca 3 números em ordem crescente

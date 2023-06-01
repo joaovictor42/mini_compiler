@@ -71,8 +71,11 @@ class Scanner:
 					self.state = 4
 
 				# Colon
-				elif current_char in [':', ';', ',']:
-					return Token(TokenType.RESERVED, current_char)
+				elif current_char == ':':
+					return Token(TokenType.COLON, current_char)
+				
+				elif current_char in [';', ',']:
+					return Token(TokenType.TERMINADOR, current_char)
 				
 				# # Assignment operator
 				# elif is_assignment_operator(current_char):
@@ -138,6 +141,10 @@ class Scanner:
 				if is_digit(current_char):
 					content += current_char
 				elif is_letter(current_char) or current_char == '_':
+					message = f"{LexicalError.NUMBER_MALFORMED}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)
+				elif current_char == '.':
 					message = f"{LexicalError.NUMBER_MALFORMED}\n"
 					message += f"Line: {self.line} Column: {self.column}"
 					raise LexicalException(message)

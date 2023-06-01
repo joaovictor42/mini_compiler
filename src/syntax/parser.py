@@ -11,21 +11,29 @@ class Parser:
 	def programa(self) -> None:
 		self.token = self.scanner.next_token()
 		if not self._match_token(':'):
-			raise SyntaxError(f"MALFORMED programa, found {self.token}")
+			message = f"'ROTULO ':' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 
 		self.token = self.scanner.next_token()
 		if not self._match_token('DECLARACOES'):
-			raise SyntaxError(f"MALFORMED programa, found {self.token}")
+			message = f"ROTULO 'DECLARACOES' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
 		self._listaDeclaracoes()
 
 		if not self._match_token(':'):
-			raise SyntaxError(f"MALFORMED programa, found {self.token}")
+			message = f"':' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
 		if not self._match_token('ALGORITMO'):
-			raise SyntaxError(f"MALFORMED programa, found {self.token}")
+			message = f"ROTULO 'ALGORITMO' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
 		self._listaComandos()
@@ -33,38 +41,42 @@ class Parser:
 	def _listaDeclaracoes(self) -> None:
 		if self._match_token(':'):
 			return
-		
-		self._declaracao()
 
-		self.token = self.scanner.next_token()
-		self._listaDeclaracoes()
-
-
-	def _declaracao(self) -> None:
 		self._varLista()
-
 		if not self._match_token(':'):
-			raise SyntaxError(f"MALFORMED declaracao, found {self.token}")
-		
+			message = f"':' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
 		self._tipoVar()
 
 		self.token = self.scanner.next_token()
 		if not self._match_token(';'):
-			raise SyntaxError(f"MALFORMED declaracao, found {self.token}")
+			message = f"';' expected\n"
+			message += f"Line: {self.scanner.line - 1} Column: {self.scanner.column}"
+			raise SyntaxError(message)
+
+		self.token = self.scanner.next_token()
+		self._listaDeclaracoes()
+
 
 	def _varLista(self) -> None:
 		if not self._match_type(TokenType.VARIAVEL):
-			raise SyntaxError(f"MALFORMED varLista, found {self.token}")
+			message = f"TIPO 'VARIAVEL' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
 		if self._match_token(','):
+			self.token = self.scanner.next_token()
 			self._varLista()
 		return
 
 	def _tipoVar(self) -> None:
 		if not self._match_token('INTEIRO') and not self._match_token('REAL'):
-			raise SyntaxError(f"INTEIRO or REAL expected, found {self.token}")
+			message = f"T	ed\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 	
 	def _expressaoAritmetica(self) -> None:
 		self._termoAritmetico()
@@ -92,7 +104,7 @@ class Parser:
 
 	def _termoAritmetico3(self) -> None:
 		if not self._match_token('*') and not self._match_token('/'):
-			message = f"* or / expected, found {self.token}\n"
+			message = f"'*' or '/' expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		
@@ -110,11 +122,11 @@ class Parser:
 			self.token = self.scanner.next_token()
 			self._expressaoAritmetica()
 			if not self._match_token(')'):
-				message = f") expected, found {self.token}\n"
+				message = f"')' expected\n"
 				message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 				raise SyntaxError(message)
 		else:
-			message = f"VARIAVEL, INTEIRO, REAL or ( expected, found {self.token}\n"
+			message = f"'TIPO' VARIAVEL, INTEIRO, REAL or '(' expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
@@ -140,7 +152,7 @@ class Parser:
 		elif self._match_token('WHILE'):
 			self._comandoRepeticao()
 		else:
-			message = f"COMMANDO expected, found {self.token}\n"
+			message = f"COMMANDO expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		
@@ -149,52 +161,65 @@ class Parser:
 		self.token = self.scanner.next_token()
 		self._expressaoAritmetica()
 		if not self._match_token('TO'):
-			message = f"TO expected, found {self.token}\n"
+			message = f"'TO' expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
 		if not self._match_type(TokenType.VARIAVEL):
-			message = f"VARIAVEL expected, found {self.token}\n"
+			message = f"TIPO 'VARIAVEL' expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
 		if not self._match_token(';'):
-			message = f"; expected, found {self.token}\n"
-			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			message = f"';' expected\n"
+			message += f"Line: {self.scanner.line -1} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 
 		
 	def _comandoEntrada(self) -> None:
 		self.token = self.scanner.next_token()
 		if not self._match_type(TokenType.VARIAVEL):
-			raise SyntaxError(f"VARIAVEL expected, found {self.token}")
+			message = f"TIPO 'VARIAVEL' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
 		if not self._match_token(';'):
-			raise SyntaxError(f"; expected, found {self.token}")
+			message = f"';' expected\n"
+			message += f"Line: {self.scanner.line -1} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		
 	def _comandoSaida(self) -> None:
 		self.token = self.scanner.next_token()
 		if not self._match_token('('):
-			raise SyntaxError(f"( expected, found {self.token}")
+			message = f"'(' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
-		if not self._match_type(TokenType.VARIAVEL) and not self._match_type(TokenType.CADEIA):
-			raise SyntaxError(f"VARIAVEL or CADEIA expected, found {self.token}")
+		if (not self._match_type(TokenType.VARIAVEL) and not self._match_type(TokenType.CADEIA) 
+			and not self._match_type(TokenType.INTEIRO) and not self._match_type(TokenType.REAL)):
+			message = f"TIPO 'VARIAVEL', 'CADEIA', 'INTEIRO' or 'REAL' expected\n"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
 		if not self._match_token(')'):
-			raise SyntaxError(f") expected, found {self.token}")
+			message = f"')' expected"
+			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 		self.token = self.scanner.next_token()
 		if not self._match_token(';'):
-			raise SyntaxError(f"; expected, found {self.token}")
+			message = f"';' expected\n"
+			message += f"Line: {self.scanner.line -1} Column: {self.scanner.column}"
+			raise SyntaxError(message)
 		
 	def _comandoCondicao(self) -> None:
 		self.token = self.scanner.next_token()
 		self._expressaoRelacional()
 		if not self._match_token('THEN'):
-			message = f"THEN expected, found {self.token}\n"
+			message = f"'THEN' expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
@@ -226,7 +251,7 @@ class Parser:
 			self.token = self.scanner.next_token()
 			self._expressaoRelacional()
 			if not self._match_token(')'):
-				message = f") expected, found {self.token}\n"
+				message = f"')' expected\n"
 				message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 				raise SyntaxError(message)
 		else: 
@@ -237,7 +262,7 @@ class Parser:
 
 	def _operadorRelacional(self) -> None:
 		if not self._match_type(TokenType.RELATIONAL_OPERATOR):
-			message = f"Relational Operator expected, found {self.token}\n"
+			message = f"Relational Operator expected\n"
 			message += f"Line: {self.scanner.line} Column: {self.scanner.column}"
 			raise SyntaxError(message)
 		self.token = self.scanner.next_token()
