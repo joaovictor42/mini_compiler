@@ -17,6 +17,7 @@ class Scanner:
 		except Exception as e:
 			print("Error while reading file: " + filename)
 			traceback.print_exc()
+			exit()
 		
 	
 	def next_token(self) -> Token:
@@ -61,14 +62,10 @@ class Scanner:
 					# Go check suffix
 					self.state = 3
 
-				# Relational operator
+				# Relational operator and assignment
 				elif is_relational_operator(current_char):
 					content += current_char
 					self.state = 4
-
-				# Assignment operator
-				elif is_assignment_operator(current_char):
-					return Token(TokenType.ASSIGNMENT, current_char)
 				
 				# Arithmetic operator
 				elif is_arithmetic_operator(current_char):
@@ -131,6 +128,10 @@ class Scanner:
 					message = f"{LexicalError.NUMBER_MALFORMED}\n"
 					message += f"Line: {self.line} Column: {self.column}"
 					raise LexicalException(message)
+				elif current_char == '.':
+					message = f"{LexicalError.NUMBER_MALFORMED}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)
 				else:
 					self.back()
 					# Check if number ends with dot. Example: 1.
@@ -139,15 +140,17 @@ class Scanner:
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
 					return Token(TokenType.NUMBER, content)
-				
-			# Relational operator
+			
+			# Relational operator and assignment
 			elif self.state == 4:
 				if current_char == '=':
 					content += current_char
 					return Token(TokenType.RELATIONAL_OPERATOR, content)
 				else:
 					self.back()
-					if content == '!':
+					if content == '=':
+						return Token(TokenType.ASSIGNMENT, content)
+					elif content == '!':
 						message = f"{LexicalError.RELATIONAL_OPERATOR_MALFORMED}\n"
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
@@ -184,7 +187,7 @@ def end_of_line(char: str) -> bool:
 	return char == '\n'
 
 def is_relational_operator(char: str) -> bool:
-	return char in ['>', '<', '!']
+	return char in ['=', '>', '<', '!']
 
 def is_arithmetic_operator(char: str) -> bool:
 	return char in ['+', '-', '*', '/']
