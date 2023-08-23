@@ -98,12 +98,23 @@ class Scanner:
 			elif self.state == 1:
 				if is_letter(current_char) or current_char == '_' or is_digit(current_char):
 					content += current_char
-				else:
+				elif (
+					is_arithmetic_operator(current_char) or 
+					is_relational_operator(current_char) or 
+					open_parenthesis(current_char) or
+					close_parenthesis(current_char) or
+					is_space(current_char) or 
+					is_inline_comment(current_char) or
+					end_of_line(current_char)
+				):
 					self.back()
 					if content in RESERVED_KEYWORDS:
 						return Token(TokenType.RESERVED, content)
 					return Token(TokenType.IDENTYFIER, content)
-			
+				else:
+					message = f"{LexicalError.INDENTIFIER_MALFORMED}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)		
 			# number: suffix is a digit or a dot
 			elif self.state == 2:
 				if is_digit(current_char):
@@ -112,27 +123,33 @@ class Scanner:
 				elif current_char == '.':
 					content += current_char
 					self.state = 3
-				elif is_letter(current_char) or current_char == '_':
+				elif (
+					is_arithmetic_operator(current_char) or 
+					is_relational_operator(current_char) or 
+					close_parenthesis(current_char) or
+					is_space(current_char) or 
+					is_inline_comment(current_char) or
+					end_of_line(current_char)
+				):
+					self.back()
+					return Token(TokenType.NUMBER, content)
+				else:
 					message = f"{LexicalError.NUMBER_MALFORMED}\n"
 					message += f"Line: {self.line} Column: {self.column}"
 					raise LexicalException(message)
-				else:
-					self.back()
-					return Token(TokenType.NUMBER, content)
 				
 			# number: suffix is digit
 			elif self.state == 3:
 				if is_digit(current_char):
 					content += current_char
-				elif is_letter(current_char) or current_char == '_':
-					message = f"{LexicalError.NUMBER_MALFORMED}\n"
-					message += f"Line: {self.line} Column: {self.column}"
-					raise LexicalException(message)
-				elif current_char == '.':
-					message = f"{LexicalError.NUMBER_MALFORMED}\n"
-					message += f"Line: {self.line} Column: {self.column}"
-					raise LexicalException(message)
-				else:
+				elif (
+					is_arithmetic_operator(current_char) or 
+					is_relational_operator(current_char) or 
+					close_parenthesis(current_char) or
+					is_space(current_char) or 
+					is_inline_comment(current_char) or
+					end_of_line(current_char)
+				):
 					self.back()
 					# Check if number ends with dot. Example: 1.
 					if content[-1] == ".":
@@ -140,6 +157,10 @@ class Scanner:
 						message += f"Line: {self.line} Column: {self.column}"
 						raise LexicalException(message)
 					return Token(TokenType.NUMBER, content)
+				else: 
+					message = f"{LexicalError.NUMBER_MALFORMED}\n"
+					message += f"Line: {self.line} Column: {self.column}"
+					raise LexicalException(message)
 			
 			# Relational operator and assignment
 			elif self.state == 4:

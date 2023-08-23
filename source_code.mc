@@ -1,68 +1,59 @@
-x y _x y_ __init__ soma1
+#Ex.1
+#soma.x
+#som@
+#.2.2.2
+#2==
+soma _soma x_1 
+minha_variavel y_A_15
+#1x 1909mult 
 
-x = 1
-x == 1
+#Ex.2
++ - * /
+1 + 2 
+1 / 3 
++++++
+******
+-----------
 
-#x
-# arithimetic operators
-1 + 2
-3 - 4
-5 * 6
-7 / 8
+#Ex.3
+x=1
+minha_variavel=
+=
+=y_
+==
+======
 
-1 ++ 2
-3 +- 4
+#Ex.4
+<
+>
+1>=2
+>>>
+<<<
+# !!!!!
+# !
+#!=!=!=
+#=!!=!!=
 
-1 < 2
-3 > 4
-5 <= 6
-7 >= 8
-9 == 10 # 2 assignments
-11 != 12
-#13 ! 14 # Malformed relational expression
+#Ex.5
+soma()
+()x_1
+(
+)
+()()()()()()
+( ( ( 
 
-(x + y)
-((x*y) + (x/y))
+#EX.6
+12345.7875
+.5555
+#.1.1.1.
+# 2356.3658.325
+11111.11111
 
-print x
-printx
-
-#int x = 1;
-#float y = 2.0;
-#int z = x + y;
-
-#if (x < y) {
-#   print x;
-#} else {
-#    print y;
-#}
-
-11
-2.2
-33.3
-44.44
-#5.
-#66.
-.7
-.88
-
-1=
-8*7
-9/8
-10>9
-11<10
-#12!11
-13!=12
-14==13
-15>=14
-16<=15
-
-#1x
-#2_
-
-
-
-
+#Ex.7
+int soma=12.22 + 5
+print(minha_variavel)
+if(expressao)
+float 2.2
 
 
 
